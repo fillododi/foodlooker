@@ -5,13 +5,14 @@ const AppContext = React.createContext();
 const AppProvider = ({children}) => {
     const [loading, setLoading] = useState(false)
     const [dishes, setDishes] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
 
-    const allDishUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s='
+    const allDishesUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s='
     const randomDishUrl = 'https://www.themealdb.com/api/json/v1/1/random.php'
+
     const fetchDishes = async (url) => {
         setLoading(true)
         try{
-
             const response = await fetch(url)
             const data = await response.json()
             if(data.meals){
@@ -25,12 +26,25 @@ const AppProvider = ({children}) => {
         setLoading(false)
     }
 
+    const fetchRandomDish = () =>{
+        fetchDishes(randomDishUrl)
+    }
+
     useEffect(()=>{
-        fetchDishes(allDishUrl)
-    }, [])
+        fetchDishes(allDishesUrl)
+    },[])
+
+    useEffect(()=>{
+        if(!searchTerm){
+            return
+        } else {
+            const selectedDishUrl = allDishesUrl + searchTerm
+            fetchDishes(selectedDishUrl)
+        }
+    }, [searchTerm])
 
     return (
-        <AppContext.Provider value={{loading, dishes}}>
+        <AppContext.Provider value={{loading, dishes, setSearchTerm, fetchRandomDish}}>
             {children}
         </AppContext.Provider>
     )
