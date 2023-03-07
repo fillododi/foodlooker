@@ -6,6 +6,8 @@ const AppProvider = ({children}) => {
     const [loading, setLoading] = useState(false)
     const [dishes, setDishes] = useState([])
     const [searchTerm, setSearchTerm] = useState('')
+    const [showModal, setShowModal] = useState(false)
+    const [selectedDish, setSelectedDish] = useState(null)
 
     const allDishesUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s='
     const randomDishUrl = 'https://www.themealdb.com/api/json/v1/1/random.php'
@@ -30,6 +32,13 @@ const AppProvider = ({children}) => {
         fetchDishes(randomDishUrl)
     }
 
+    const selectDish = (dish_id, isFavorite) =>{
+        let dish
+        dish = dishes.find((dish)=> dish.idMeal === dish_id)
+        setSelectedDish(dish)
+        setShowModal(true)
+    }
+
     useEffect(()=>{
         fetchDishes(allDishesUrl)
     },[])
@@ -44,7 +53,7 @@ const AppProvider = ({children}) => {
     }, [searchTerm])
 
     return (
-        <AppContext.Provider value={{loading, dishes, setSearchTerm, fetchRandomDish}}>
+        <AppContext.Provider value={{loading, dishes, setSearchTerm, fetchRandomDish, showModal, selectedDish, selectDish}}>
             {children}
         </AppContext.Provider>
     )
